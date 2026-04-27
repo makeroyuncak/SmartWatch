@@ -3,47 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hizalanmış Saat ve Günler</title>
     <style>
         @import url('https://fonts.cdnfonts.com/css/seven-segment');
 
         body {
-            background-color: #ffffff;
+            background-color: #ffffff; /* Sayfa arka planını koyu yapalım ki tasarım öne çıksın */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            color: white;
             font-family: sans-serif;
         }
 
-        /* Ana Panel (Görseli Arka Plan Yapar) */
+        /* Ana Panel: Görselin boyutuyla sabitliyoruz */
         .main-panel {
             position: relative;
             width: 800px;
             height: 800px;
-            background-image: url('g3086.png'); /* Görsel dosya adınızla eşleşmeli */
-            background-size: contain;
+            background-image: url('g3086.png');
+            background-size: 100% 100%; /* Görseli tam sığdır */
             background-repeat: no-repeat;
             background-position: center;
         }
 
-        /* Üstteki 7 Gün Şekilleri */
+        /* Üstteki 7 Gün Şekilleri - Konumu resme göre ayarlandı */
         .days-container {
             position: absolute;
-            top: 605px; /* Görseldeki pencere hizası */
-            left: 50%;
+            top: 598px; /* Dikey hizayı buradan milimetrik değiştirebilirsin */
+            left: 50.3%; /* Yatay merkezden hafif kaydırma gerekebilir */
             transform: translateX(-50%);
             display: flex;
-            gap: 15px;
+            gap: 13.5px; /* Pencereler arası boşluk */
         }
 
         .item-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            cursor: pointer;
             position: relative;
+            width: 38px; /* Pencere genişliği */
         }
 
         .color-picker {
@@ -55,45 +55,48 @@
             z-index: 10;
         }
 
+        /* Çizdiğin pencerelerin tam üstüne gelecek parlayan kutu */
         .shape {
-            width: 38px;
-            height: 55px;
+            width: 34px; 
+            height: 52px;
             border: 2px solid transparent;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
+            border-top-left-radius: 18px;
+            border-top-right-radius: 18px;
             transition: all 0.3s ease;
         }
 
         .label {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
-            margin-top: 5px;
-            color: transparent; /* Görselde zaten yazı var, sadece parlamayı ekleyeceğiz */
+            margin-top: 4px;
+            color: transparent; /* Görseldeki yazıların üzerine parıltı verir */
             transition: all 0.3s ease;
+            text-align: center;
         }
 
-        /* Dijital Saat Alanı */
+        /* Dijital Saat Alanı - 88:88'in tam üzerine */
         .clock-wrapper {
             position: absolute;
-            top: 735px; /* Görseldeki 88:88 hizası */
+            top: 732px; /* Dikey hiza */
             left: 50%;
             transform: translateX(-50%);
+            width: 400px;
+            text-align: center;
         }
 
         .digital-clock {
             font-family: 'Seven Segment', sans-serif;
-            font-size: 110px;
-            color: #1a1a1a; /* Sönük başlangıç */
+            font-size: 105px; /* Boyutu resimdeki boşluğa göre ayarlandı */
+            color: rgba(255, 255, 255, 0.05); /* Kapalıyken hafif görünürlük */
             cursor: pointer;
             transition: all 0.4s ease;
-            letter-spacing: 5px;
+            letter-spacing: 2px;
         }
 
-        /* Işık Efektleri */
-        .active-glow .shape {
-            border-color: currentColor;
-            background-color: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 15px currentColor, inset 0 0 10px currentColor;
+        /* Gizli Renk Seçici (Saatin üzerinde tıklandığında çalışır) */
+        .clock-wrapper .color-picker {
+            top: 0;
+            left: 0;
         }
     </style>
 </head>
@@ -124,6 +127,7 @@
     </div>
 
     <script>
+        // Günleri güncelleme (Parlayan efekt)
         function updateItem(picker) {
             const color = picker.value;
             const container = picker.parentElement;
@@ -131,19 +135,21 @@
             const label = container.querySelector('.label');
 
             shape.style.borderColor = color;
-            shape.style.backgroundColor = color + "4D"; // %30 dolgu
-            shape.style.boxShadow = `0 0 20px ${color}, inset 0 0 10px ${color}`;
+            shape.style.backgroundColor = color + "33"; // %20 doluluk
+            shape.style.boxShadow = `0 0 15px ${color}, inset 0 0 8px ${color}`;
             
             label.style.color = color;
-            label.style.textShadow = `0 0 10px ${color}`;
+            label.style.textShadow = `0 0 8px ${color}`;
         }
 
+        // Saati güncelleme (Renk ve parlama)
         function updateClock(color) {
             const clock = document.getElementById('mainClock');
             clock.style.color = color;
-            clock.style.textShadow = `0 0 40px ${color}, 0 0 10px ${color}`;
+            clock.style.textShadow = `0 0 30px ${color}, 0 0 5px ${color}`;
         }
 
+        // Gerçek zamanlı saat fonksiyonu
         function runClock() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');

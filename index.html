@@ -3,119 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hizalanmış Saat ve Günler</title>
+    <title>Responsive Panel</title>
     <style>
         @import url('https://fonts.cdnfonts.com/css/seven-segment');
 
         body {
-            background-color: #ffffff; /* Sayfa arka planını koyu yapalım ki tasarım öne çıksın */
+            background-color: #1a1a1a;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
             font-family: sans-serif;
+            overflow: hidden; /* Kaydırma çubuklarını gizler */
         }
 
-        /* Ana Panel: Görselin boyutuyla sabitliyoruz */
+        /* Ana Panel: Ekranın genişliğine veya yüksekliğine göre kendini ayarlar */
         .main-panel {
             position: relative;
-            width: 800px;
-            height: 800px;
+            width: 90vw; /* Ekran genişliğinin %90'ı */
+            max-width: 800px; /* Ama 800px'i geçmesin */
+            aspect-ratio: 1 / 1; /* Kare formunu korur (800/800) */
             background-image: url('g3086.png');
-            background-size: 100% 100%; /* Görseli tam sığdır */
+            background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
         }
 
-        /* Üstteki 7 Gün Şekilleri - Konumu resme göre ayarlandı */
+        /* Günler Konteynırı: Yüzde ile konumlandırma */
         .days-container {
             position: absolute;
-            top: 598px; /* Dikey hizayı buradan milimetrik değiştirebilirsin */
-            left: 50.3%; /* Yatay merkezden hafif kaydırma gerekebilir */
+            top: 75.5%; /* 800px içinde 605px'e denk gelir */
+            left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 13.5px; /* Pencereler arası boşluk */
+            gap: 1.8%; /* Esnek boşluk */
+            width: 48%; /* Pencerelerin yayıldığı toplam alan */
+            justify-content: center;
         }
 
         .item-container {
+            position: relative;
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative;
-            width: 38px; /* Pencere genişliği */
         }
 
-        .color-picker {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        /* Çizdiğin pencerelerin tam üstüne gelecek parlayan kutu */
         .shape {
-            width: 34px; 
-            height: 52px;
+            width: 100%;
+            aspect-ratio: 38 / 55; /* Çizdiğin pencere oranını korur */
             border: 2px solid transparent;
-            border-top-left-radius: 18px;
-            border-top-right-radius: 18px;
+            border-top-left-radius: 1vw;
+            border-top-right-radius: 1vw;
             transition: all 0.3s ease;
         }
 
         .label {
-            font-size: 12px;
+            font-size: 1.8vw; /* Mobilde küçülen yazı tipi */
+            max-font-size: 14px;
             font-weight: bold;
-            margin-top: 4px;
-            color: transparent; /* Görseldeki yazıların üzerine parıltı verir */
-            transition: all 0.3s ease;
-            text-align: center;
+            margin-top: 5%;
+            color: transparent;
+            white-space: nowrap;
         }
 
-        /* Dijital Saat Alanı - 88:88'in tam üzerine */
+        /* Saat Alanı: Yüzde ile konumlandırma */
         .clock-wrapper {
             position: absolute;
-            top: 732px; /* Dikey hiza */
+            top: 91.5%; /* 800px içinde 735px civarı */
             left: 50%;
             transform: translateX(-50%);
-            width: 400px;
+            width: 50%;
             text-align: center;
         }
 
         .digital-clock {
             font-family: 'Seven Segment', sans-serif;
-            font-size: 105px; /* Boyutu resimdeki boşluğa göre ayarlandı */
-            color: rgba(255, 255, 255, 0.05); /* Kapalıyken hafif görünürlük */
+            font-size: 13vw; /* Ekran genişliğine göre büyür/küçülür */
+            max-font-size: 110px;
+            color: rgba(255, 255, 255, 0.05);
+            letter-spacing: 0.5vw;
             cursor: pointer;
-            transition: all 0.4s ease;
-            letter-spacing: 2px;
         }
 
-        /* Gizli Renk Seçici (Saatin üzerinde tıklandığında çalışır) */
-        .clock-wrapper .color-picker {
-            top: 0;
-            left: 0;
+        .color-picker {
+            position: absolute;
+            top: 0; left: 0; opacity: 0;
+            width: 100%; height: 100%;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Büyük ekranlar için yazı boyutunu sabitleme */
+        @media (min-width: 800px) {
+            .digital-clock { font-size: 110px; }
+            .label { font-size: 14px; }
+            .shape { border-top-left-radius: 20px; border-top-right-radius: 20px; }
         }
     </style>
 </head>
 <body>
 
     <div class="main-panel">
-        
         <div class="days-container">
             <script>
                 const gunler = ["PTS", "SAL", "ÇAR", "PER", "CUM", "CTS", "PAZ"];
-                for (let i = 0; i < 7; i++) {
+                gunler.forEach(gun => {
                     document.write(`
                         <div class="item-container">
                             <input type="color" class="color-picker" oninput="updateItem(this)">
                             <div class="shape"></div>
-                            <div class="label">${gunler[i]}</div>
+                            <div class="label">${gun}</div>
                         </div>
                     `);
-                }
+                });
             </script>
         </div>
 
@@ -123,11 +125,9 @@
             <input type="color" class="color-picker" oninput="updateClock(this.value)">
             <div id="mainClock" class="digital-clock">00:00</div>
         </div>
-
     </div>
 
     <script>
-        // Günleri güncelleme (Parlayan efekt)
         function updateItem(picker) {
             const color = picker.value;
             const container = picker.parentElement;
@@ -135,21 +135,18 @@
             const label = container.querySelector('.label');
 
             shape.style.borderColor = color;
-            shape.style.backgroundColor = color + "33"; // %20 doluluk
-            shape.style.boxShadow = `0 0 15px ${color}, inset 0 0 8px ${color}`;
-            
+            shape.style.backgroundColor = color + "4D";
+            shape.style.boxShadow = `0 0 1.5vw ${color}, inset 0 0 1vw ${color}`;
             label.style.color = color;
-            label.style.textShadow = `0 0 8px ${color}`;
+            label.style.textShadow = `0 0 1vw ${color}`;
         }
 
-        // Saati güncelleme (Renk ve parlama)
         function updateClock(color) {
             const clock = document.getElementById('mainClock');
             clock.style.color = color;
-            clock.style.textShadow = `0 0 30px ${color}, 0 0 5px ${color}`;
+            clock.style.textShadow = `0 0 4vw ${color}, 0 0 1vw ${color}`;
         }
 
-        // Gerçek zamanlı saat fonksiyonu
         function runClock() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');

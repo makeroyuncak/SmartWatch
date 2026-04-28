@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Responsive Panel</title>
     <style>
-        @import url('https://fonts.cdnfonts.com/css/seven-segment');
+
+        /* Google Fonts üzerinden alternatif ve kararlı dijital fontlar */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=VT323&display=swap');
+        /* Senin istediğin font */
+        @import url('https://db.onlinewebfonts.com/c/52a2d1605e846601ab9ed3cd6cbab9b5?family=MTC+7+Segment');
 
         body {
-            background-color: #1a1a1a;
+            background-color: ##ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -24,67 +28,114 @@
             width: 90vw; /* Ekran genişliğinin %90'ı */
             max-width: 800px; /* Ama 800px'i geçmesin */
             aspect-ratio: 1 / 1; /* Kare formunu korur (800/800) */
-            background-image: url('g3086.png');
+            background-image: url('https://raw.githubusercontent.com/makeroyuncak/SmartWatch/refs/heads/main/g3086.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
         }
 
-        /* Günler Konteynırı: Yüzde ile konumlandırma */
+        /* Günler Konteynırı: Tüm pencereleri kapsayan ana hat */
         .days-container {
             position: absolute;
-            top: 75.5%; /* 800px içinde 605px'e denk gelir */
+            top: 60.5%; 
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 1.8%; /* Esnek boşluk */
-            width: 48%; /* Pencerelerin yayıldığı toplam alan */
-            justify-content: center;
+            /* justify-content: center; yerine space-between kullanarak gap'i daha stabil kılabiliriz */
+            justify-content: space-between; 
+            width: 47%; 
+            z-index: 5;
+            /* gap kullanmak yerine genişlikleri sabitleyelim */
         }
-
+        
+        /* Günler Konteynırı: Tüm pencereleri kapsayan ana hat */
+        .times-container {
+            position: absolute;
+            top: 93.5%; /* Saatin hemen altındaki hizaya çeker */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            /* justify-content: center; yerine space-between kullanarak gap'i daha stabil kılabiliriz */
+            justify-content: space-between; 
+            width: 40%; 
+            z-index: 5;
+        }
+        
+        /* Her bir günün kutusu */
         .item-container {
             position: relative;
-            flex: 1;
+            /* 7 pencere + aradaki boşluklar için sabit genişlik (%100 / 7'den biraz az) */
+            width: 9.05%; 
+            flex-shrink: 0; /* Sıkışmayı ve boyutun değişmesini engeller */
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-
+        
+        /* Parlayan Şekil (Pencere) */
         .shape {
-            width: 100%;
-            aspect-ratio: 38 / 55; /* Çizdiğin pencere oranını korur */
-            border: 2px solid transparent;
+            width: 90%; 
+            aspect-ratio: 1 / 1.4; 
+            border: 2px solid #0000FF;
             border-top-left-radius: 1vw;
             border-top-right-radius: 1vw;
             transition: all 0.3s ease;
+            box-sizing: border-box;
+            /* margin-top: 10; yanına px eklemelisin yoksa çalışmaz */
+            margin-top: 0px;
         }
-
+        
+        /* Yazıların (PTS, SAL...) konumu */
         .label {
-            font-size: 1.8vw; /* Mobilde küçülen yazı tipi */
-            max-font-size: 14px;
+            margin-top: 4px;
+            font-size: 1.5vw;
             font-weight: bold;
-            margin-top: 5%;
-            color: transparent;
-            white-space: nowrap;
+            color: #0000FF; /* Test için görünür yapalım */
+            text-align: center;
+            width: 100%;
         }
 
         /* Saat Alanı: Yüzde ile konumlandırma */
         .clock-wrapper {
             position: absolute;
-            top: 91.5%; /* 800px içinde 735px civarı */
-            left: 50%;
+            top: 68.4%; /* 800px içinde 735px civarı */
+            left: 49%;
             transform: translateX(-50%);
-            width: 50%;
+            width: 40%;
             text-align: center;
         }
-
+        
         .digital-clock {
-            font-family: 'Seven Segment', sans-serif;
-            font-size: 13vw; /* Ekran genişliğine göre büyür/küçülür */
-            max-font-size: 110px;
-            color: rgba(255, 255, 255, 0.05);
-            letter-spacing: 0.5vw;
+            font-family: "MTC 7 Segment", "Orbitron", monospace !important;
+            color: #1a1a1a;
             cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+            transition: all 0.3s ease;
+        }
+
+        /* 1. MASAÜSTÜ (PC) İÇİN: Ekran genişse sabit boyuta geç */
+        @media (min-width: 801px) {
+            .digital-clock {
+                font-size: 150px !important; /* PC'de kutuya tam oturan sabit boyut */
+            }
+        }
+        
+        /* 2. MOBİL İÇİN: Ekran darsa (800px ve altı) dinamik boyuta geç */
+        @media (max-width: 800px) {
+            .digital-clock {
+                font-size: 17vw !important; /* Mobilde dikey/yatay duruma göre kendini büyütür */
+            }
+        }
+        
+        /* Rakamların ana boyutu miras almasını sağlar */
+        .digital-clock .digit, 
+        .digital-clock .sep {
+            font-family: inherit;
+            font-size: inherit;
         }
 
         .color-picker {
@@ -121,12 +172,26 @@
             </script>
         </div>
 
+      <div class="times-container">
+            <script>
+                const vakitler = ["İMS", "SAB", "ÖĞL", "İKİ", "AKŞ", "YAT"];
+                vakitler.forEach(vak => {
+                    document.write(`
+                        <div class="item-container">
+                            <input type="color" class="color-picker" oninput="updateItemVakit(this)">
+                            <div class="label">${vak}</div>
+                        </div>
+                    `);
+                });
+            </script>
+        </div>
+        
         <div class="clock-wrapper">
             <input type="color" class="color-picker" oninput="updateClock(this.value)">
             <div id="mainClock" class="digital-clock">00:00</div>
         </div>
     </div>
-
+    
     <script>
         function updateItem(picker) {
             const color = picker.value;
@@ -135,12 +200,21 @@
             const label = container.querySelector('.label');
 
             shape.style.borderColor = color;
-            shape.style.backgroundColor = color + "4D";
+            shape.style.backgroundColor = color;/* + "4D";*/
             shape.style.boxShadow = `0 0 1.5vw ${color}, inset 0 0 1vw ${color}`;
             label.style.color = color;
             label.style.textShadow = `0 0 1vw ${color}`;
         }
 
+        function updateItemVakit(picker) {
+            const color = picker.value;
+            const container = picker.parentElement;
+            const label = container.querySelector('.label');
+
+            label.style.color = color;
+            label.style.textShadow = `0 0 1vw ${color}`;
+        }
+        
         function updateClock(color) {
             const clock = document.getElementById('mainClock');
             clock.style.color = color;

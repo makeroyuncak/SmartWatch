@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelişmiş Cihaz Paneli</title>
+    <style>
+        :root {
+            /* Light Theme Variables */
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #1a1a1a;
+            --primary-color: #4a90e2;
+            --accent-color: #2ecc71;
+            --border-color: #ddd;
+            --input-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Theme Variables */
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --primary-color: #357abd;
+            --accent-color: #27ae60;
+            --border-color: #333;
+            --input-bg: #2d2d2d;
+        }
+
+        * { box-sizing: border-box; transition: all 0.3s ease; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0; padding: 20px;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        /* Tema Değiştirici Switch */
+        .theme-switch-wrapper { display: flex; align-items: center; gap: 10px; }
+        .theme-switch {
+            position: relative; display: inline-block; width: 50px; height: 24px;
+        }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px;
+            background-color: white; border-radius: 50%; transition: .4s;
+        }
+        input:checked + .slider { background-color: var(--primary-color); }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        .settings-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        h2 { font-size: 1.1rem; margin-bottom: 20px; color: var(--primary-color); border-left: 4px solid var(--accent-color); padding-left: 10px; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem; }
+
+        input[type="text"], input[type="time"], input[type="date"], input[type="number"], select {
+            display: flex; width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);
+            background: var(--input-bg); color: var(--text-color); font-size: 0.95rem;
+        }
+
+        /* Checkbox Izgarası */
+        .checkbox-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 10px; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 8px;
+        }
+        .checkbox-item { display: flex; align-items: center; font-size: 0.85rem; cursor: pointer; }
+        .checkbox-item input { margin-right: 6px; accent-color: var(--accent-color); width: 16px; height: 16px; }
+
+        .btn-play {
+            white-space: nowrap; background: var(--accent-color); color: white; border: none; padding: 10px 20px;
+            border-radius: 8px; cursor: pointer; font-weight: bold; transition: opacity 0.3s;
+        }
+		
+		.btn-play:hover { opacity: 0.8; }
+
+        .save-btn {
+            width: 100%; padding: 15px; background: var(--primary-color); color: white;
+            border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold;
+            cursor: pointer; margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+            .checkbox-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Cihaz Ayarları</h1>
+        <div class="theme-switch-wrapper">
+            <span>🌙</span>
+            <label class="theme-switch">
+                <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
+                <span class="slider"></span>
+            </label>
+            <span>☀️</span>
+        </div>
+    </header>
+
+    <!-- Tarih ve Saat Ayarları -->
+    <div class="settings-card">
+        <h2>📅 Zaman ve Güç</h2>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Tarih Ayarı</label>
+                <input type="date" id="manual-date">
+            </div>
+            <div class="form-group">
+                <label>Saat Ayarı</label>
+                <input type="time" id="manual-time">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Tasarruf Modu</label>
+            <select id="power-save">
+                <option value="min">Minimum</option>
+                <option value="mid">Orta</option>
+                <option value="max">Maksimum</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Vakit Seçimleri -->
+    <div class="settings-card">
+    <h2>🕌 Ezan ve Dua Ayarları</h2>
+    
+    <div class="form-group" id="ezan-section">
+        <label>Ezan Okunacak Vakitler</label>
+        <div class="checkbox-grid">
+            <label class="checkbox-item"><input type="checkbox" value="0"> Sabah</label>
+            <label class="checkbox-item"><input type="checkbox" value="1"> Öğle</label>
+            <label class="checkbox-item"><input type="checkbox" value="2"> İkindi</label>
+            <label class="checkbox-item"><input type="checkbox" value="3"> Akşam</label>
+            <label class="checkbox-item"><input type="checkbox" value="4"> Yatsı</label>
+        </div>
+    </div>
+
+    <div class="form-group" id="ezan-dua-section">
+        <label>Ezan Duası Okunacak Vakitler</label>
+        <div class="checkbox-grid">
+            <label class="checkbox-item"><input type="checkbox" value="0"> Sabah</label>
+            <label class="checkbox-item"><input type="checkbox" value="1"> Öğle</label>
+            <label class="checkbox-item"><input type="checkbox" value="2"> İkindi</label>
+            <label class="checkbox-item"><input type="checkbox" value="3"> Akşam</label>
+            <label class="checkbox-item"><input type="checkbox" value="4"> Yatsı</label>
+        </div>
+    </div>
+</div>
+	
+    <!-- İçerik Planlama (Gelişmiş Checkbox Yapısı) -->
+    <div class="settings-card">
+        <h2>📖 İçerik Planlama</h2>
+        
+        <div class="form-group">
+            <label>Ayet Okunacak Vakitler</label>
+            <div class="checkbox-grid">
+                <label class="checkbox-item"><input type="checkbox"> Sabah</label>
+                <label class="checkbox-item"><input type="checkbox"> Öğle</label>
+                <label class="checkbox-item"><input type="checkbox"> İkindi</label>
+                <label class="checkbox-item"><input type="checkbox"> Akşam</label>
+                <label class="checkbox-item"><input type="checkbox"> Yatsı</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Hadis Okunacak Vakitler</label>
+            <div class="checkbox-grid">
+                <label class="checkbox-item"><input type="checkbox"> Sabah</label>
+                <label class="checkbox-item"><input type="checkbox"> Öğle</label>
+                <label class="checkbox-item"><input type="checkbox"> İkindi</label>
+                <label class="checkbox-item"><input type="checkbox"> Akşam</label>
+                <label class="checkbox-item"><input type="checkbox"> Yatsı</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Dua Okunacak Vakitler</label>
+            <div class="checkbox-grid">
+                <label class="checkbox-item"><input type="checkbox"> Sabah</label>
+                <label class="checkbox-item"><input type="checkbox"> Öğle</label>
+                <label class="checkbox-item"><input type="checkbox"> İkindi</label>
+                <label class="checkbox-item"><input type="checkbox"> Akşam</label>
+                <label class="checkbox-item"><input type="checkbox"> Yatsı</label>
+            </div>
+        </div>
+    </div>
+
+	<!-- Manuel Dinleme Testi -->
+    <div class="settings-card">
+        <h2>🎧 Manuel Dinleme Testi</h2>
+        
+        <div class="form-group">
+            <label>Ezan Dinle (ID girin)</label>
+            <div class="listen-group">
+                <input type="number" id="ezan-id" placeholder="Örn: 101"> <!-- id eklendi -->
+                <button class="btn-play" onclick="playAudio('ezan')">Oynat</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Ayet Dinle (ID girin)</label>
+            <div class="listen-group">
+                <input type="number" id="ayet-id" placeholder="Örn: 202"> <!-- id eklendi -->
+                <button class="btn-play" onclick="playAudio('ayet')">Oynat</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Hadis Dinle (ID girin)</label>
+            <div class="listen-group">
+                <input type="number" id="hadis-id" placeholder="Örn: 303"> <!-- id eklendi -->
+                <button class="btn-play" onclick="playAudio('hadis')">Oynat</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Dua Dinle (ID girin)</label>
+            <div class="listen-group">
+                <input type="number" id="dua-id" placeholder="Örn: 404"> <!-- id eklendi -->
+                <button class="btn-play" onclick="playAudio('dua')">Oynat</button>
+            </div>
+        </div>
+    </div>
+
+     <button class="save-btn" onclick="alert('Ayarlar kaydedildi!')">DEĞİŞİKLİKLERİ KAYDET</button>
+
+</div>
+
+<script>
+    function toggleTheme() {
+        const theme = document.getElementById('theme-toggle').checked ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+    }
+
+    // Sayfa açılışında varsayılan olarak Dark Mode ayarla
+    document.documentElement.setAttribute('data-theme', 'dark');
+	
+	// Ayarları Kaydet Butonu Fonksiyonu
+function saveAllSettings() {
+    const settings = {
+        date: document.getElementById('manual-date').value,
+        time: document.getElementById('manual-time').value,
+        powerSave: document.getElementById('power-save').value,
+        theme: document.documentElement.getAttribute('data-theme') || 'dark',
+        
+		// Checkbox verilerini (Sabah=1, Öğle=2, İkindi=4, Akşam=8, Yatsı=16 mantığıyla bitmask yapabilirsin)
+		ezanVakitleri: Array.from(document.querySelectorAll('#ezan-section input:checked')).map(i => i.value),
+        ezanDuaVakitleri: Array.from(document.querySelectorAll('#ezan-dua-section input:checked')).map(i => i.value),
+		
+        // Checkbox verilerini (Sabah=1, Öğle=2, İkindi=4, Akşam=8, Yatsı=16 mantığıyla bitmask yapabilirsin)
+        // Ya da basitçe dizi olarak alalım:
+        ayetVakitleri: Array.from(document.querySelectorAll('#ayet-section input:checked')).map(i => i.value),
+        hadisVakitleri: Array.from(document.querySelectorAll('#hadis-section input:checked')).map(i => i.value),
+        duaVakitleri: Array.from(document.querySelectorAll('#dua-section input:checked')).map(i => i.value)
+    };
+
+    fetch('/save-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+    })
+    .then(response => {
+        if(response.ok) alert('Ayarlar başarıyla kaydedildi!');
+        else alert('Hata: Kaydedilemedi.');
+    })
+    .catch(err => console.error('Hata:', err));
+}
+
+	// Sayfa Açıldığında Ayarları Getirme
+	window.onload = function() {
+		fetch('/get-settings')
+		.then(response => response.json())
+		.then(data => {
+			// Formu doldur
+			document.getElementById('manual-date').value = data.date;
+			document.getElementById('manual-time').value = data.time;
+			document.getElementById('power-save').value = data.powerSave;
+			
+			// Temayı uygula
+			document.documentElement.setAttribute('data-theme', data.theme);
+			document.getElementById('theme-toggle').checked = (data.theme === 'light');
+			
+			// Geri yükleme kısmına şunları ekle:
+			setCheckboxes('ezan-section', data.ezanVakitleri);
+			setCheckboxes('ezan-dua-section', data.ezanDuaVakitleri);
+
+			// Vakit checkbox'larını işaretle (Yardımcı fonksiyon)
+			setCheckboxes('ayet-section', data.ayetVakitleri);
+			setCheckboxes('hadis-section', data.hadisVakitleri);
+			setCheckboxes('dua-section', data.duaVakitleri);
+		});
+	};
+
+	function setCheckboxes(sectionId, values) {
+		if(!values) return;
+		const section = document.getElementById(sectionId);
+		values.forEach(v => {
+			const cb = section.querySelector(`input[value="${v}"]`);
+			if(cb) cb.checked = true;
+		});
+	}
+
+    function playAudio(type) {
+        // Tipe göre ilgili input alanını bul (ezan, ayet, hadis, dua)
+        const input = document.getElementById(`${type}-id`);
+        const idValue = input ? input.value : 0;
+
+        if (!idValue) {
+            alert("Lütfen geçerli bir ID girin!");
+            return;
+        }
+
+        // ESP32'ye GET isteği gönder
+        // Örn: /play-audio?type=ezan&id=101
+        fetch(`/play-audio?type=${type}&id=${idValue}`)
+            .then(response => {
+                if (response.ok) {
+                    console.log(`${type} (ID: ${idValue}) oynatılıyor...`);
+                } else {
+                    alert("Oynatma hatası!");
+                }
+            })
+            .catch(err => console.error("Hata:", err));
+    }
+
+</script>
+
+</body>
+</html>

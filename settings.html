@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ezan Sistemi Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root[data-theme="light"] {
+            --bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --text: #2d3436;
+            --primary: #27ae60;
+            --secondary: #ecf0f1;
+            --border: #dfe6e9;
+            --accent: #f39c12;
+        }
+
+        :root[data-theme="dark"] {
+            --bg: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text: #e0e0e0;
+            --primary: #2ecc71;
+            --secondary: #3d3d3d;
+            --border: #444;
+            --accent: #f1c40f;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .container { max-width: 500px; margin: 0 auto; padding-bottom: 100px; }
+
+        /* Header & Dark Mode Toggle */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
+
+		/* Kart içeriği başlangıçta gizli (açık olmasını istediğinize 'active' klası ekleyeceğiz) */
+		.card-content {
+			max-height: 0;
+			overflow: hidden;
+			transition: max-height 0.3s ease-out, opacity 0.3s ease;
+			opacity: 0;
+		}
+
+		/* Kart açıkken uygulanacak stil */
+		.card.active .card-content {
+			max-height: 1000px; /* İçeriğin sığacağı kadar büyük bir değer */
+			opacity: 1;
+			margin-top: 15px;
+			visibility: visible;
+		}
+		
+		/* Başlığa tıklanabilir olduğunu belli eden stil */
+		.section-title {
+			cursor: pointer;
+			margin-bottom: 0 !important; /* Kapalıyken boşluk kalmasın */
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		/* Açma/Kapama oku simgesi */
+		.section-title::after {
+			content: '\f107'; /* FontAwesome aşağı ok */
+			font-family: 'Font Awesome 6 Free';
+			font-weight: 900;
+			transition: transform 0.3s;
+		}
+
+		.card.active .section-title::after {
+			transform: rotate(180deg);
+		}
+
+        label { display: block; font-size: 0.85rem; margin-bottom: 6px; opacity: 0.8; }
+
+        /* input, select {
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        } */
+		
+		select, button, input { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--secondary); color: var(--text); font-size: 14px; box-sizing: border-box; }
+        
+
+        /* Checkbox Sırası - Tek Satır 5 Vakit */
+        .vakit-row {
+            display: flex;
+            justify-content: space-between;
+            background: var(--secondary);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .vakit-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            gap: 5px;
+        }
+
+        .vakit-item input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
+
+        /* Sürgüler */
+        .range-box { margin-bottom: 15px; }
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+            height: 6px;
+            cursor: pointer;
+        }
+
+        /* Medya Satırları */
+        .media-group { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+        .play-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Alarm Tasarımı */
+        .alarm-inputs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .alarm-inputs input { flex: 2; }
+        .alarm-inputs select { flex: 1; }
+        .add-btn {
+            background: var(--accent);
+            border: none;
+            color: white;
+            padding: 0 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #alarm-list {
+            margin-top: 10px;
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+        }
+        .alarm-item {
+            background: var(--secondary);
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Sabit Kaydet Butonu */
+        .footer-save {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+        }
+        .btn-save {
+            width: 100%;
+            max-width: 470px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+        }
+		
+		.filter-group { display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap; }
+        .filter-btn { flex: 1; min-width: 80px; padding: 10px 5px; cursor: pointer; border: none; background: var(--secondary); font-weight: 600; font-size: 12px; transition: 0.2s; }
+        .filter-btn.active { background: var(--primary); color: white; }
+
+        .month-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; display: none; }
+        .month-nav span { font-weight: bold; font-size: 14px; }
+        .nav-btn { width: auto; padding: 5px 15px; background: var(--primary); color: white; border: none; }
+
+        .table-container { margin-top: 15px; max-height: 400px; overflow-y: auto; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
+        th { background: var(--primary); color: white; position: sticky; top: 0; padding: 10px; }
+        td { padding: 8px; border-bottom: 1px solid var(--border); }
+        tr.today { background: rgba(46, 204, 113, 0.2); font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2 style="margin:0">Sistem Ayarları</h2>
+        <button style="width:auto; padding:8px;" class="theme-toggle" onclick="toggleTheme()">
+            <i class="fa-solid fa-circle-half-stroke"></i> Tema Değiştir
+        </button>
+    </div>
+
+    <!-- Konum Seçimi -->
+    <div class="card active">
+		<div class="section-title"><i class="fa-solid fa-mosque"></i> Namaz Vakitleri</div>
+		<div class="card-content">
+        <label>Şehir</label>
+        <select id="city" onchange="loadDistricts()"></select>
+        <label>İlçe</label>
+        <select id="district" onchange="loadYearlyData()"></select>
+
+        <div class="filter-group">
+            <button class="filter-btn active" onclick="setFilter('gunluk', this)">Günlük</button>
+            <button class="filter-btn" onclick="setFilter('haftalik', this)">Haftalık</button>
+            <button class="filter-btn" onclick="setFilter('aylik', this)">Aylık</button>
+            <button class="filter-btn" onclick="setFilter('yillik', this)">Yıllık</button>
+        </div>
+
+        <!-- Aylık Gezinme Paneli -->
+        <div id="monthNav" class="month-nav">
+            <button class="nav-btn" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+            <span id="currentMonthLabel">Ocak 2024</span>
+            <button class="nav-btn" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+
+        <div class="table-container">
+            <table id="vakitTable">
+                <thead>
+                    <tr><th>Tarih</th><th>İmsak</th><th>Öğle</th><th>İkindi</th><th>Akşam</th><th>Yatsı</th></tr>
+                </thead>
+                <tbody id="vakitBody"></tbody>
+            </table>
+        </div>
+		</div>
+    </div>
+	
+    <!-- Genel ve Uyku -->
+    <div class="card">
+        <div class="section-title"><i class="fa-solid fa-sliders"></i> Cihaz Denetimi</div>
+		<div class="card-content">
+        <label>Sistem Saati</label>
+        <input type="time" value="14:30" style="margin-bottom:15px;">
+
+        <div class="range-box">
+            <label>Genel Tasarruf Modu (0-10)</label>
+            <input type="range" min="0" max="10" value="3">
+        </div>
+
+        <div class="range-box">
+            <label>Ses Seviyesi (0-10)</label>
+            <input type="range" min="0" max="10" value="8">
+        </div>
+		</div>
+    </div>
+
+    <div class="card">
+        <div class="section-title"><i class="fa-solid fa-moon"></i> Uyku Modu</div>
+		<div class="card-content">
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <div style="flex:1"><label>Başlangıç</label><input type="time" value="23:00"></div>
+            <div style="flex:1"><label>Bitiş</label><input type="time" value="05:30"></div>
+        </div>
+        <div class="range-box">
+            <label>Uyku Modu Tasarruf Seviyesi (0-10)</label>
+            <input type="range" min="0" max="10" value="10">
+        </div>
+		</div>
+    </div>
+
+    <!-- Vakit Atamaları -->
+    <div class="card">
+        <div class="section-title"><i class="fa-solid fa-calendar-check"></i> Vakit Programlama</div>
+		<div class="card-content">
+        
+        <label>Ezan Okunacak Vakitler</label>
+        <div class="vakit-row">
+            <div class="vakit-item"><span>Sabah </span><input type="checkbox" checked></div>
+            <div class="vakit-item"><span>Öğle  </span><input type="checkbox" checked></div>
+            <div class="vakit-item"><span>İkindi</span><input type="checkbox" checked></div>
+            <div class="vakit-item"><span>Akşam </span><input type="checkbox" checked></div>
+            <div class="vakit-item"><span>Yatsı </span><input type="checkbox" checked></div>
+        </div>
+
+        <label>Ezan Duası Vakitleri</label>
+        <div class="vakit-row">
+            <div class="vakit-item"><span>Sabah </span><input type="checkbox"></div>
+            <div class="vakit-item"><span>Öğle  </span><input type="checkbox" checked></div>
+            <div class="vakit-item"><span>İkindi</span><input type="checkbox"></div>
+            <div class="vakit-item"><span>Akşam </span><input type="checkbox" checked></div>
+            <div class="vakit-item"><span>Yatsı </span><input type="checkbox"></div>
+        </div>
+
+        <label>Günlük Ayet</label>
+        <div class="vakit-row">
+            <div class="vakit-item"><span>Sabah </span><input type="checkbox"></div>
+            <div class="vakit-item"><span>Öğle  </span><input type="checkbox" checked></div>
+            <div class="vakit-item"><span>İkindi</span><input type="checkbox"></div>
+            <div class="vakit-item"><span>Akşam </span><input type="checkbox" checked></div>
+            <div class="vakit-item"><span>Yatsı </span><input type="checkbox"></div>
+        </div>
+		
+		<label>Günlük Hadis</label>
+        <div class="vakit-row">
+            <div class="vakit-item"><span>Sabah </span><input type="checkbox"></div>
+            <div class="vakit-item"><span>Öğle  </span><input type="checkbox" checked></div>
+            <div class="vakit-item"><span>İkindi</span><input type="checkbox"></div>
+            <div class="vakit-item"><span>Akşam </span><input type="checkbox" checked></div>
+            <div class="vakit-item"><span>Yatsı </span><input type="checkbox"></div>
+        </div>
+		
+		<label>Günlük Dua</label>
+        <div class="vakit-row">
+            <div class="vakit-item"><span>Sabah </span><input type="checkbox"></div>
+            <div class="vakit-item"><span>Öğle  </span><input type="checkbox" checked></div>
+            <div class="vakit-item"><span>İkindi</span><input type="checkbox"></div>
+            <div class="vakit-item"><span>Akşam </span><input type="checkbox" checked></div>
+            <div class="vakit-item"><span>Yatsı </span><input type="checkbox"></div>
+        </div>
+		</div>
+
+    </div>
+
+    <!-- Medya Oynatıcı -->
+    <div class="card">
+        <div class="section-title"><i class="fa-solid fa-play-circle"></i> İçerik Önizleme</div>
+		<div class="card-content">
+        
+        <div class="media-group">
+            <select><option>Ezan: Hicaz Makamı</option><option>Ezan: Rast Makamı</option></select>
+            <button class="play-btn"><i class="fa-solid fa-play"></i></button>
+        </div>
+        <div class="media-group">
+            <select><option>Ayet: Bakara Suresi</option><option>Ayet: Ayetel Kürsi</option></select>
+            <button class="play-btn"><i class="fa-solid fa-play"></i></button>
+        </div>
+        <div class="media-group">
+            <select><option>Hadis: Nebevi 1</option><option>Hadis: Nebevi 2</option></select>
+            <button class="play-btn"><i class="fa-solid fa-play"></i></button>
+        </div>
+        <div class="media-group">
+            <select><option>Kuran: Cüz 30</option><option>Kuran: Fetih Suresi</option></select>
+            <button class="play-btn"><i class="fa-solid fa-play"></i></button>
+        </div>
+		</div>
+    </div>
+
+    <!-- Alarm Sistemi -->
+    <div class="card">
+        <div class="section-title"><i class="fa-solid fa-bell"></i> Alarm Planlayıcı</div>
+		<div class="card-content">
+        <div class="alarm-inputs">
+            <input type="datetime-local" id="alarmDate">
+            <select id="alarmSound">
+                <option>Melodi 1</option>
+                <option>Kuş Sesi</option>
+                <option>Ney Sesi</option>
+            </select>
+            <button class="add-btn" onclick="addAlarm()"><i class="fa-solid fa-plus"></i></button>
+        </div>
+        <div id="alarm-list">
+            <!-- Alarmlar buraya düşecek -->
+        </div>
+		</div>
+    </div>
+</div>
+
+<div class="footer-save">
+    <button class="btn-save" onclick="alert('Tüm ayarlar senkronize edildi!')">AYARLARI KAYDET</button>
+</div>
+
+<script>
+    let yearlyData = [];
+    let currentFilter = 'gunluk';
+    let displayDate = new Date(); // Aylık görünüm için referans tarih
+    const ISTANBUL_ID = "539"; // API'deki İstanbul ID'si
+
+    async function init() {
+        await loadCities();
+        // İstanbul'u varsayılan seç
+        document.getElementById("city").value = ISTANBUL_ID;
+        await loadDistricts();
+        loadYearlyData();
+    }
+
+    async function loadCities() {
+        const r = await fetch("https://ezanvakti.imsakiyem.com/api/locations/states?countryId=2");
+        const res = await r.json();
+        const citySelect = document.getElementById("city");
+        citySelect.innerHTML = res.data.map(c => `<option value="${c._id}">${c.name}</option>`).join("");
+    }
+
+    async function loadDistricts() {
+        const cityId = document.getElementById("city").value;
+        const r = await fetch("https://ezanvakti.imsakiyem.com/api/locations/districts?stateId=" + cityId);
+        const res = await r.json();
+        const distSelect = document.getElementById("district");
+        distSelect.innerHTML = res.data.map(d => `<option value="${d._id}">${d.name}</option>`).join("");
+    }
+
+    async function loadYearlyData() {
+        const distId = document.getElementById("district").value;
+        if(!distId) return;
+        const r = await fetch(`https://ezanvakti.imsakiyem.com/api/prayer-times/${distId}/yearly`);
+        const res = await r.json();
+        yearlyData = res.data;
+        renderTable();
+    }
+
+    function setFilter(filter, btn) {
+        currentFilter = filter;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        document.getElementById("monthNav").style.display = (filter === 'aylik') ? 'flex' : 'none';
+        renderTable();
+    }
+
+    function changeMonth(step) {
+        displayDate.setMonth(displayDate.getMonth() + step);
+        renderTable();
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById("vakitBody");
+        const monthLabel = document.getElementById("currentMonthLabel");
+        tbody.innerHTML = "";
+        
+        const todayStr = new Date().toLocaleDateString('tr-TR');
+        let filtered = [];
+
+        if (currentFilter === 'gunluk') {
+            filtered = yearlyData.filter(d => new Date(d.date).toLocaleDateString('tr-TR') === todayStr);
+        } else if (currentFilter === 'haftalik') {
+            const nextWeek = new Date();
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            filtered = yearlyData.filter(d => {
+                const date = new Date(d.date);
+                return date >= new Date().setHours(0,0,0,0) && date <= nextWeek;
+            });
+        } else if (currentFilter === 'aylik') {
+            monthLabel.innerText = displayDate.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' });
+            filtered = yearlyData.filter(d => {
+                const date = new Date(d.date);
+                return date.getMonth() === displayDate.getMonth() && date.getFullYear() === displayDate.getFullYear();
+            });
+        } else {
+            filtered = yearlyData;
+        }
+
+        tbody.innerHTML = filtered.map(day => {
+            const d = new Date(day.date);
+            const isToday = d.toLocaleDateString('tr-TR') === todayStr ? 'class="today"' : '';
+            return `<tr ${isToday}>
+                <td>${d.toLocaleDateString('tr-TR', {day:'2-digit', month:'2-digit'})}</td>
+                <td>${day.times.imsak}</td>
+                <td>${day.times.ogle}</td>
+                <td>${day.times.ikindi}</td>
+                <td>${day.times.aksam}</td>
+                <td>${day.times.yatsi}</td>
+            </tr>`;
+        }).join("");
+    }
+
+    function toggleTheme() {
+        const h = document.documentElement;
+        h.setAttribute('data-theme', h.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    }
+
+    function saveToESP() {
+        const distId = document.getElementById("district").value;
+        // ESP'ye sadece ilçe ID'sini ve tercihleri gönderiyoruz
+        fetch(`/save?id=${distId}`)
+        .then(r => alert("ESP32 Başarıyla Güncellendi!"))
+        .catch(e => alert("Bağlantı Hatası!"));
+    }
+
+    init();
+</script>
+
+<script>
+    // Dark/Light Mode Geçişi
+    function toggleTheme() {
+        const root = document.documentElement;
+        const currentTheme = root.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        root.setAttribute('data-theme', newTheme);
+    }
+
+	function saveSettings() {
+		const params = new URLSearchParams();
+
+		// 1. Cihaz Denetimi
+		params.append('saat', document.querySelector('input[type="time"]').value);
+		const ranges = document.querySelectorAll('input[type="range"]');
+		params.append('tasarruf', ranges[0].value);
+		params.append('ses', ranges[1].value);
+
+		// 2. Uyku Modu
+		const uykuTimes = document.querySelectorAll('.card:nth-child(3) input[type="time"]');
+		params.append('u_bas', uykuTimes[0].value);
+		params.append('u_bit', uykuTimes[1].value);
+		params.append('u_tas', ranges[2].value);
+
+		// 3. Vakit Programlama (Checkbox Grupları)
+		// Sırasıyla: Ezan, Ezan Duası, Ayet, Hadis, Dua
+		const vakitRows = document.querySelectorAll('.vakit-row');
+		const labels = ['v_ezan', 'v_dua', 'v_ayet', 'v_hadis', 'v_zikir'];
+		
+		vakitRows.forEach((row, index) => {
+			const checks = Array.from(row.querySelectorAll('input'))
+								.map(i => i.checked ? "1" : "0").join("");
+			params.append(labels[index], checks);
+		});
+
+		// 4. Medya Seçimleri (Comboboxlar)
+		const selects = document.querySelectorAll('select');
+		params.append('m_ezan', selects[1].value);
+		params.append('m_ayet', selects[2].value);
+		params.append('m_hadis', selects[3].value);
+		params.append('m_kuran', selects[4].value);
+
+		// Gönderim
+		fetch('/save', {
+			method: 'POST',
+			body: params
+		})
+		.then(response => response.ok ? alert("Ayarlar Gönderildi!") : alert("Hata oluştu!"))
+		.catch(err => alert("ESP32 Bağlantı Hatası!"));
+	}
+
+    // Dinamik Alarm Ekleme
+    function addAlarm() {
+        const dateInput = document.getElementById('alarmDate');
+        const soundInput = document.getElementById('alarmSound');
+        const list = document.getElementById('alarm-list');
+
+        if(!dateInput.value) return alert("Lütfen tarih seçin");
+
+        const div = document.createElement('div');
+        div.className = 'alarm-item';
+        div.innerHTML = `
+            <span><i class="fa-regular fa-clock"></i> ${dateInput.value.replace('T', ' ')}</span>
+            <span><i class="fa-solid fa-music"></i> ${soundInput.value}</span>
+        `;
+        list.appendChild(div);
+        
+        // Formu temizle
+        dateInput.value = "";
+    }
+	
+	
+	
+		document.querySelectorAll('.section-title').forEach(title => {
+		title.addEventListener('click', () => {
+			const card = title.parentElement;
+			card.classList.toggle('active');
+		});
+	});
+	
+</script>
+
+</body>
+</html>

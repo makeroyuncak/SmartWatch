@@ -32,6 +32,10 @@
         /* Başlığa tıklanabilir olduğunu belli eden stil */
 		.section-title { cursor: pointer; margin-bottom: 0 !important; display: flex; justify-content: space-between; align-items: center; }
 
+        /* Medya Satırları */
+        .media-group { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+        .play-btn { background: var(--primary); color: white; border: none; width: 45px; height: 40px; border-radius: 8px; cursor: pointer; }
+        
 		/* Açma/Kapama oku simgesi */
 		.section-title::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; transition: transform 0.3s;}
 
@@ -403,6 +407,10 @@
                 </div>
         		</div>
             </div>
+            
+            <div class="card">
+                <button class="btn-save" onclick="saveSettings()">KAYDET</button>
+            </div>
         </div>
     
         <!-- 2. NAMAZ VAKİTLERİ SEKMESİ -->
@@ -438,25 +446,52 @@
                         <tbody id="vakitBody"></tbody>
                     </table>
                 </div>
+                
+                <button class="btn-save" style="position:static; margin-top: 25px;" onclick="saveSettings()">KAYDET</button>
+                
         		</div>
             </div>
         </div>
     
         <!-- 3. İÇERİK DİNLEME SEKMESİ -->
         <div id="tab-dinleme" class="tab-content">
+            <!-- Medya Oynatıcı -->
             <div class="card active">
-                <div class="section-title"><i class="fa-solid fa-play"></i> Manuel Oynatıcı</div>
-                <div class="card-content">
-                    <label>Oynatılacak İçerik</label>
-                    <select id="manualPlay">
-                        <option value="1">Ezan (Mekke)</option>
-                        <option value="2">Ezan (İstanbul)</option>
-                        <option value="3">Sela</option>
-                        <option value="4">Dua</option>
-                    </select>
-                    <button class="btn-save" style="position:static; margin-top:15px;" onclick="sendManualPlay()">ŞİMDİ OYNAT</button>
+                <div class="section-title"><i class="fa-solid fa-play-circle"></i> İçerik Önizleme</div>
+        		<div class="card-content">
+                <label>Ezan Dinle</label>
+                <div class="media-group">
+                    <select><option>Ezan: Hicaz Makamı</option><option>Ezan: Rast Makamı</option></select>
+                    <button class="play-btn"><i class="fa-solid fa-play"></i></button>
                 </div>
+                
+                <label>Bir Ayet Dinle</label>
+                <div class="media-group">
+                    <select><option>Ayet: Bakara Suresi</option><option>Ayet: Ayetel Kürsi</option></select>
+                    <button class="play-btn"><i class="fa-solid fa-play"></i></button>
+                </div>
+                
+                <label>Bir Hadis Dinle</label>
+                <div class="media-group">
+                    <select><option>Hadis: Nebevi 1</option><option>Hadis: Nebevi 2</option></select>
+                    <button class="play-btn"><i class="fa-solid fa-play"></i></button>
+                </div>
+                
+                <label>Bir Dua Dinle</label>
+                <div class="media-group">
+                    <select><option>Kuran: Cüz 30</option><option>Kuran: Fetih Suresi</option></select>
+                    <button class="play-btn"><i class="fa-solid fa-play"></i></button>
+                </div>
+                
+                <label>Kur'an Dinle</label>
+                <div class="media-group">
+                    <select><option>Yasin Suresi</option><option>Mülk Suresi</option><option>Nebe Suresi</option></select>
+                    <button class="play-btn"><i class="fa-solid fa-play"></i></button>
+                </div>
+                
+        		</div>
             </div>
+    
         </div>
         
         <!-- 4. RENKLER -->
@@ -608,9 +643,6 @@
         </div>
 </div>
 
-<div class="footer">
-    <button class="btn-save" onclick="saveSettings()">AYARLARI ESP'YE GÖNDER</button>
-</div>
 
 <script>
     let yearlyData = [];

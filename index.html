@@ -231,7 +231,7 @@
         /* Saat Alanı: Yüzde ile konumlandırma */
         .clock-wrapper {
             position: absolute;
-            top: 67%; /* 800px içinde 735px civarı */
+            top: 66.5%; /* 800px içinde 735px civarı */
             left: 49%;
             transform: translateX(-50%);
             width: 40%;
@@ -240,7 +240,7 @@
         
         .digital-clock {
             font-family: "MTC 7 Segment", "Orbitron", monospace !important;
-            font-size: 95px;
+            font-size: 9vw;
             color: #00f2ff;
             cursor: pointer;
             display: flex;
@@ -252,25 +252,31 @@
         }
 
         /* 1. MASAÜSTÜ (PC) İÇİN: Ekran genişse sabit boyuta geç */
-        /*@media (min-width: 901px) {*/
-        /*    .digital-clock {*/
-                /*font-size: 180px !important; */
-        /*    }*/
-        /*}*/
+        @media (min-width: 901px) {
+            .digital-clock {
+                font-size: 92px !important; 
+            }
+			.label {
+				font-size: 10px;
+			}
+        }
         
         /* 2. MOBİL İÇİN: Ekran darsa (800px ve altı) dinamik boyuta geç */
-        /*@media (max-width: 900px) {*/
-        /*    .digital-clock {*/
-                /*font-size: 18vw !important;*/
-        /*    }*/
-        /*}*/
-        
-        /* Rakamların ana boyutu miras almasını sağlar */
-        .digital-clock .digit, 
-        .digital-clock .sep {
-            font-family: inherit;
-            font-size: inherit;
+        @media (max-width: 900px) {
+            .digital-clock {
+                font-size: 65px !important;
+            }
+			.label {
+				font-size: 8px;
+			}
         }
+        
+        <!-- /* Rakamların ana boyutu miras almasını sağlar */ -->
+        <!-- .digital-clock .digit,  -->
+        <!-- .digital-clock .sep { -->
+            <!-- font-family: inherit; -->
+            <!-- font-size: inherit; -->
+        <!-- } -->
 
         .color-picker {
             position: absolute;
@@ -503,13 +509,13 @@
                     
                     <div class="svg-wrapper">
 
-        <div class="days-container" id="dayBackColor" style="position: absolute; top: 68%; left: 66%;">
+        <div class="days-container" id="dayBackColor" style="position: absolute; top: 68.2%; left: 65%;">
             <input type="color" class="color-picker" 
                    oninput="updateItemBackColor(this, 'dayBackColor')">
             <div class="label">Arka Plan Rengi</div>
         </div>
         
-        <div class="days-container" id="timeBackColor" style="position: absolute; top: 91%; left: 62%;">
+        <div class="days-container" id="timeBackColor" style="position: absolute; top: 91%; left: 60%;">
             <input type="color" class="color-picker" 
                    oninput="updateItemBackColor(this, 'timeBackColor')">
             <div class="label">Arka Plan Rengi</div>

@@ -1,0 +1,12 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "makeroyuncak.github",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "makeroyuncak.github",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "id": "mo_redball"
+}
